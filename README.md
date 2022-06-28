@@ -1,2 +1,2 @@
-# apigee-apiregistry-maven-plugin
-Apigee API Registry Maven Plugin
+# apigee-registry-maven-plugin
+Apigee Registry Maven Plugin
