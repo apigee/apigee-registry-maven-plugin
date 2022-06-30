@@ -29,12 +29,12 @@ mvn install -P{profile} -DprojectId=${project} -Dfile={path}
 # Samples
 
 ## Prerequisites (Apigee Hub setup)
-- Follow the [steps] (https://cloud.google.com/apigee/docs/api-hub/get-started-api-hub) to provision Apigee Hub
+- Follow the [steps](https://cloud.google.com/apigee/docs/api-hub/get-started-api-hub) to provision Apigee Hub
 - Create a Service Account with the Apigee Registry permissions, download the service account key file
 
 ## API Configuration
 
-- Check out the sample [config yaml file] (./api-config.yaml) that includes the structure of the API, specs, deployment and artifact objects needed to push an API to the API Registry
+- Check out the sample [config yaml file](./api-config.yaml) that includes the structure of the API, specs, deployment and artifact objects needed to push an API to the API Registry
 
 
 ### Basic Implementation
@@ -44,7 +44,7 @@ mvn install -P{profile} -DprojectId=${project} -Dfile={path}
 Goal: Import OpenAPI specs and create API Docs in the developer portal instance.
 
 ```
-/samples/DevPortal
+/samples
 ```
 
 This project demonstrates use of apigee-registry-maven-plugin to push API to a Apigee Registry. 
@@ -60,6 +60,6 @@ To use, edit samples/pom.xml and update values as specified.
 <apigee.registry.bearer>${bearer}</apigee.registry.bearer> <!-- Bearer Token. Use this or  "apigee.registry.serviceaccount.file" -->
 ```
 
-To run, jump to the sample project `cd /samples/DevPortal` and run 
+To run, jump to the sample project `cd /samples` and run 
 
-`mvn install -Pdev -Doptions=create -Dfile={path}`
+`mvn install -Pdev -Doptions=update -Dfile={path}`
