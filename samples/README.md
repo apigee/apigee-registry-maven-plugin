@@ -65,3 +65,4 @@ To run, jump to the sample project `cd /samples` and run
 ```bash
 mvn install -Pdev -Doptions=update -Dfile={path}
 ```
+where `path` is the path to your Service Account Key file
