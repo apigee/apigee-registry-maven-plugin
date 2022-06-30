@@ -63,7 +63,7 @@
 				<apigee.registry.location>global</apigee.registry.location> <!-- Apigee Registry location. Default is global -->
 				<!--  <apigee.registry.spec.dir>./specs</apigee.registry.spec.dir> --> <!-- Directory where specs are accessible. Using ./specs for sample -->
 				<apigee.registry.config.file>./api-config.yaml</apigee.registry.config.file> <!-- Path to the API configuration yaml-->
-				<apigee.registry.config.options>update</apigee.registry.config.options> <!-- Options like none, create, update, delete, sync. Default is none-->
+				<apigee.registry.config.options>${options}</apigee.registry.config.options> <!-- Options like none, create, update, delete, sync. Default is none-->
 				<apigee.registry.serviceaccount.file>${file}</apigee.registry.serviceaccount.file> <!-- Service Account File. Use this or "apigee.registry.bearer". Service Account takes precedence -->
 				<apigee.registry.bearer>${bearer}</apigee.registry.bearer> <!-- Bearer Token. Use this or  "apigee.registry.serviceaccount.file" -->
 			</properties>

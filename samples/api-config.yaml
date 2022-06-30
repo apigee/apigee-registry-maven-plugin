@@ -151,38 +151,3 @@ data:
        externalChannelURI: http://34-71-198-89.sslip.io/render/projects/apihub-demo/locations/global/apis/demoapi/deployments/test
        intendedAudience: Used for quality assurance testing
        accessGuidance: If you have a need for testing credentials, reach out to the team to request.
- artifacts:
-   - kind: ReferenceList
-     metadata:
-       name: apihub-related
-     data:
-       displayName: ""
-       description: Defines a list of related resources
-       references:
-         - id: github
-           displayName: GitHub
-           category: apihub-source-code
-           resource: ""
-           uri: https://github.com/apigee/registry
-         - id: performance-dashboard
-           displayName: Performance dashboard
-           category: apihub-other
-           resource: ""
-           uri: https://apigee.google.com/organizations/apigee-migration-cust/analytics/proxy-performance
-   - kind: ReferenceList
-     metadata:
-       name: apihub-dependencies
-     data:
-       displayName: ""
-       description: Defines a list of dependencies
-       references:
-         - id: cloud-sql
-           displayName: Cloud SQL
-           category: apihub-other
-           resource: ""
-           uri: https://cloud.google.com/sql/docs/postgres
-         - id: gcp-iam
-           displayName: GCP IAM
-           category: apihub-other
-           resource: ""
-           uri: https://pantheon.corp.google.com/apigee/api-registry/apis/iam/overview?project=apihub-demo
