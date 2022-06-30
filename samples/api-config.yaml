@@ -122,7 +122,7 @@ data:
        displayName: dev
        apiSpecRevision: 106/specs/openapi-106yaml@59db0bac
        endpointURI: https://acme-dev.apigee.net
-       externalChannelURI: http://34-71-198-89.sslip.io/render/projects/apihub-demo/locations/global/apis/demoapi/deployments/development
+       externalChannelURI: http://specs.acme.com/dev
        intendedAudience: Nightly builds, somewhat volatile
        accessGuidance: Access is restricted to engineers on the team.
    - metadata:
@@ -148,6 +148,6 @@ data:
        displayName: test
        apiSpecRevision: 105/specs/openapi-105-typoyaml@8dca65fe
        endpointURI: acme-test.apigee.net
-       externalChannelURI: http://34-71-198-89.sslip.io/render/projects/apihub-demo/locations/global/apis/demoapi/deployments/test
+       externalChannelURI: http://specs.acme.com/test
        intendedAudience: Used for quality assurance testing
        accessGuidance: If you have a need for testing credentials, reach out to the team to request.
