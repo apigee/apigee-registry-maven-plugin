@@ -1,0 +1,188 @@
+#
+# Copyright 2022 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+apiVersion: apigeeregistry/v1
+kind: API
+metadata:
+ name: demoapi
+ labels:
+   apihub-business-unit: example
+   apihub-lifecycle: production
+   apihub-style: apihub-openapi
+   apihub-target-users: public
+   apihub-team: example
+ annotations:
+   apihub-primary-contact: team@example.com
+   apihub-primary-contact-description: Team Email
+data:
+ displayName: ✨ Demo API ✨
+ description: "This example API is meant to show how an API description document can have a revision history as well as a set of deployments. \n\nThings to check out:\n- History tab to see how the revisions to the OpenAPI document over time\n- Deployments view, to understand which revision is in use where\n- \"Get Access\" and \"Docs\" buttons at the top, which map to the recommended deployment (the \"pin\")\n- The cards for related things and dependencies\n\nNote: even if you have permissions to change this API, please don't! \nYou're encouraged to add your own entry or to edit another one.\n\nThis is an example API in API hub. You can explore the revision history or find which revision is available in different deployment instances."
+ recommendedDeployment: prod
+ availability: NONE
+ versions:
+   - metadata:
+       name: "103"
+       annotations:
+         apihub-end-of-life-date: "2022-03-01T08:00:00.000Z"
+         apihub-end-of-life-type: apihub-confirmed
+     data:
+       displayName: 1.0.3
+       state: retired
+       specs:
+         - metadata:
+             name: openapi-103yaml
+           data:
+             filename: openapi-1.0.3.yaml
+             mimeType: "application/x.openapi"
+             sourceURI: "file://./specs/openapi-103.yaml"
+   - metadata:
+       name: "104"
+       annotations:
+         apihub-end-of-life-type: apihub-unknown
+     data:
+       displayName: 1.0.4
+       state: production
+       specs:
+         - metadata:
+             name: openapi-104yaml
+             annotations:
+               apihub-commit-hash: 363f7290fd2b2eeb9b06abe308e8deee70c56d4b
+           data:
+             filename: openapi-1.0.4.yaml
+             mimeType: "application/x.openapi"
+             sourceURI: "file://./specs/openapi-104.yaml"
+   - metadata:
+       name: "105"
+       annotations:
+         apihub-end-of-life-type: apihub-unknown
+     data:
+       displayName: 1.0.5
+       state: preview
+       specs:
+         - metadata:
+             name: openapi-105-typoyaml
+             annotations:
+               apihub-comment: fixed typo
+               apihub-commit-hash: 75e709ef291218987b1ffa3d46c0ce97b13a179e
+           data:
+             filename: openapi-1.0.5-typo.yaml
+             mimeType: "application/x.openapi"
+             sourceURI: "file://./specs/openapi-105-typo.yaml"
+         - metadata:
+             name: openapi-105yaml
+             annotations:
+               apihub-commit-hash: 1ea4ec70919867a8252a43dc27157e3804ea4416
+           data:
+             filename: openapi-1.0.5.yaml
+             mimeType: "application/x.openapi"
+             sourceURI: "file://./specs/openapi-105-typo.yaml"
+   - metadata:
+       name: "106"
+       annotations:
+         apihub-end-of-life-type: apihub-unknown
+     data:
+       displayName: 1.0.6
+       state: develop
+       specs:
+         - metadata:
+             name: openapi-106yaml
+             annotations:
+               apihub-commit-hash: bf16776cf0846e296ad64948db6c38c15306f370
+           data:
+             filename: openapi-1.0.6.yaml
+             mimeType: "application/x.openapi"
+             sourceURI: "file://./specs/openapi-106.yaml"
+   - metadata:
+       name: "200"
+       annotations:
+         apihub-end-of-life-type: apihub-unknown
+     data:
+       displayName: 2.0.0
+       state: design
+ deployments:
+   - metadata:
+       name: development
+       labels:
+         apihub-gateway: apihub-google-cloud-apigee
+       annotations:
+         apihub-external-channel-name: SwaggerUI
+     data:
+       displayName: dev
+       apiSpecRevision: 106/specs/openapi-106yaml@59db0bac
+       endpointURI: https://acme-dev.apigee.net
+       externalChannelURI: http://34-71-198-89.sslip.io/render/projects/apihub-demo/locations/global/apis/demoapi/deployments/development
+       intendedAudience: Nightly builds, somewhat volatile
+       accessGuidance: Access is restricted to engineers on the team.
+   - metadata:
+       name: prod
+       labels:
+         apihub-gateway: apihub-google-cloud-apigee
+       annotations:
+         apihub-external-channel-name: API portal (public)
+     data:
+       displayName: prod
+       apiSpecRevision: 104/specs/openapi-104yaml@c6bf9583
+       endpointURI: api.acme.com
+       externalChannelURI: https://developers.acme.com/apis/magic-demo
+       intendedAudience: The production version of our external customer-facing API
+       accessGuidance: All access is self-service through our public developer portal. Visit the site to self-manage access.
+   - metadata:
+       name: test
+       labels:
+         apihub-gateway: apihub-google-cloud-apigee
+       annotations:
+         apihub-external-channel-name: SwaggerUI
+     data:
+       displayName: test
+       apiSpecRevision: 105/specs/openapi-105-typoyaml@8dca65fe
+       endpointURI: acme-test.apigee.net
+       externalChannelURI: http://34-71-198-89.sslip.io/render/projects/apihub-demo/locations/global/apis/demoapi/deployments/test
+       intendedAudience: Used for quality assurance testing
+       accessGuidance: If you have a need for testing credentials, reach out to the team to request.
+ artifacts:
+   - kind: ReferenceList
+     metadata:
+       name: apihub-related
+     data:
+       displayName: ""
+       description: Defines a list of related resources
+       references:
+         - id: github
+           displayName: GitHub
+           category: apihub-source-code
+           resource: ""
+           uri: https://github.com/apigee/registry
+         - id: performance-dashboard
+           displayName: Performance dashboard
+           category: apihub-other
+           resource: ""
+           uri: https://apigee.google.com/organizations/apigee-migration-cust/analytics/proxy-performance
+   - kind: ReferenceList
+     metadata:
+       name: apihub-dependencies
+     data:
+       displayName: ""
+       description: Defines a list of dependencies
+       references:
+         - id: cloud-sql
+           displayName: Cloud SQL
+           category: apihub-other
+           resource: ""
+           uri: https://cloud.google.com/sql/docs/postgres
+         - id: gcp-iam
+           displayName: GCP IAM
+           category: apihub-other
+           resource: ""
+           uri: https://pantheon.corp.google.com/apigee/api-registry/apis/iam/overview?project=apihub-demo

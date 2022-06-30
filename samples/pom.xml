@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2022 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>Apigee</groupId>
+	<artifactId>Registry</artifactId>
+	<version>1.0</version>
+	<name>Apigee Registry</name>
+	<packaging>pom</packaging>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<name>Maven Plugin Repository</name>
+			<url>https://repo1.maven.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.apigee.registry.config</groupId>
+				<artifactId>apigee-registry-maven-plugin</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<id>api-deploy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>api</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<apigee.registry.projectId>${projectId}</apigee.registry.projectId> <!-- GCP Project ID where Apigee Registry is provisioned -->
+				<apigee.registry.location>global</apigee.registry.location> <!-- Apigee Registry location. Default is global -->
+				<!--  <apigee.registry.spec.dir>./specs</apigee.registry.spec.dir> --> <!-- Directory where specs are accessible. Using ./specs for sample -->
+				<apigee.registry.config.file>./api-config.yaml</apigee.registry.config.file> <!-- Path to the API configuration yaml-->
+				<apigee.registry.config.options>update</apigee.registry.config.options> <!-- Options like none, create, update, delete, sync. Default is none-->
+				<apigee.registry.serviceaccount.file>${file}</apigee.registry.serviceaccount.file> <!-- Service Account File. Use this or "apigee.registry.bearer". Service Account takes precedence -->
+				<apigee.registry.bearer>${bearer}</apigee.registry.bearer> <!-- Bearer Token. Use this or  "apigee.registry.serviceaccount.file" -->
+			</properties>
+		</profile>
+	</profiles>
+</project>
