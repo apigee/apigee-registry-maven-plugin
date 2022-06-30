@@ -63,10 +63,12 @@ To use, edit samples/pom.xml and update values as specified.
 To run, jump to the sample project `cd /samples` and run 
 
 ```bash
-mvn install -Pdev -DprojectId={projectId} -Doptions=update -Dfile={path}
+mvn install -P{profile} -DprojectId={projectId} -Doptions=update -Dfile={path}
 ```
 where
+-  `profile` is the Maven profile in the pom.xml
 -  `projectId` is the GCP Project ID where Apigee Registry is provisioned
+-  `options` to either "create", "update", "delete" or "sync" the API into the API Registry
 -  `path` is the path to your Service Account Key file
 
 
