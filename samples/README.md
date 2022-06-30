@@ -63,6 +63,10 @@ To use, edit samples/pom.xml and update values as specified.
 To run, jump to the sample project `cd /samples` and run 
 
 ```bash
-mvn install -Pdev -Doptions=update -Dfile={path}
+mvn install -Pdev -DprojectId={projectId} -Doptions=update -Dfile={path}
 ```
-where `path` is the path to your Service Account Key file
+where
+-  `projectId` is the GCP Project ID where Apigee Registry is provisioned
+-  `path` is the path to your Service Account Key file
+
+
