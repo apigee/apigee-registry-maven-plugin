@@ -27,21 +27,24 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import com.apigee.registry.config.model.APIConfig;
+import com.apigee.registry.config.model.Data;
+import com.apigee.registry.config.model.data.Version;
+import com.apigee.registry.config.model.data.version.Spec_;
 import com.apigee.registry.config.utils.ApigeeRegistryClient;
 import com.apigee.registry.config.utils.BuildProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
- * Goal to register API in Apigee Registry
+ * Goal to register API Version Spec in Apigee Registry
  *
  * @author ssvaidyanathan
- * @goal api
+ * @goal apiversionspec
  * @phase install
  */
 
-public class APIMojo extends APIRegistryAbstractMojo {
-	static Logger logger = LogManager.getLogger(APIMojo.class);
+public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
+	static Logger logger = LogManager.getLogger(APIVersionSpecMojo.class);
 
 	public static final String ____ATTENTION_MARKER____ = "************************************************************************";
 
@@ -56,7 +59,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 	/**
 	 * Constructor.
 	 */
-	public APIMojo() {
+	public APIVersionSpecMojo() {
 		super();
 	}
 
@@ -68,7 +71,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 	public void init() throws MojoExecutionException, MojoFailureException {
 		try {
 			logger.info(____ATTENTION_MARKER____);
-			logger.info("API");
+			logger.info("API Version Spec");
 			logger.info(____ATTENTION_MARKER____);
 
 			String options = "";
@@ -148,7 +151,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 	}
 
 	/**
-	 * Creates an API in the Registry
+	 * Creates an API Version Spec in the Registry
 	 *
 	 * 
 	 * @throws MojoExecutionException
@@ -160,13 +163,20 @@ public class APIMojo extends APIRegistryAbstractMojo {
 				if(config.getMetadata()!=null) {
 					String apiId = config.getMetadata().getName();
 					if(apiId != null && !apiId.equals("")) {
-						if(action.equalsIgnoreCase("Update"))
-							ApigeeRegistryClient.updateAPI(serverProfile, apiId, config, action);
-						else {
-							if(!ApigeeRegistryClient.getAPI(serverProfile, apiId, config)) {
-								ApigeeRegistryClient.createAPI(serverProfile, apiId, config, action);
-							}else {
-								logger.info(format("API: %s already exist", apiId));
+						if(config.getData()!=null) {
+							Data data = config.getData();
+							for (Version version : data.getVersions()) {
+								for(Spec_ spec : version.getData().getSpecs()) {
+									if(action.equalsIgnoreCase("Update"))
+										ApigeeRegistryClient.updateAPIVersionSpec(serverProfile, apiId, version.getMetadata().getName(), spec, action);
+									else {
+										if(!ApigeeRegistryClient.getAPIVersionSpec(serverProfile, apiId, version.getMetadata().getName(), spec)) {
+											ApigeeRegistryClient.createAPIVersionSpec(serverProfile, apiId, version.getMetadata().getName(), spec, action);
+										}else {
+											logger.info(format("API Version Spec: %s already exist", spec.getMetadata().getName()));
+										}
+									}
+								}
 							}
 						}
 					}
@@ -184,7 +194,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 	}
 
 	/**
-	 * Deletes API from Registry
+	 * Deletes API Version Spec from Registry
 	 * 
 	 * @throws MojoExecutionException
 	 */
@@ -195,7 +205,14 @@ public class APIMojo extends APIRegistryAbstractMojo {
 				if(config.getMetadata()!=null) {
 					String apiId = config.getMetadata().getName();
 					if(apiId != null && !apiId.equals("")) {
-						ApigeeRegistryClient.deleteAPI(serverProfile, apiId, config);
+						if(config.getData()!=null) {
+							Data data = config.getData();
+							for (Version version : data.getVersions()) {
+								for(Spec_ spec : version.getData().getSpecs()) {
+									ApigeeRegistryClient.deleteAPIVersionSpec(serverProfile, apiId, version.getMetadata().getName(), spec);
+								}
+							}
+						}
 					}
 					else {
 						throw new RuntimeException("ID in the config file is missing or empty");

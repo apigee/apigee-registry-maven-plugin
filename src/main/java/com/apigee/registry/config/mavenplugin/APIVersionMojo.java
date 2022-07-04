@@ -27,21 +27,23 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import com.apigee.registry.config.model.APIConfig;
+import com.apigee.registry.config.model.Data;
+import com.apigee.registry.config.model.data.Version;
 import com.apigee.registry.config.utils.ApigeeRegistryClient;
 import com.apigee.registry.config.utils.BuildProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
- * Goal to register API in Apigee Registry
+ * Goal to register API Version in Apigee Registry
  *
  * @author ssvaidyanathan
- * @goal api
+ * @goal apiversion
  * @phase install
  */
 
-public class APIMojo extends APIRegistryAbstractMojo {
-	static Logger logger = LogManager.getLogger(APIMojo.class);
+public class APIVersionMojo extends APIRegistryAbstractMojo {
+	static Logger logger = LogManager.getLogger(APIVersionMojo.class);
 
 	public static final String ____ATTENTION_MARKER____ = "************************************************************************";
 
@@ -56,7 +58,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 	/**
 	 * Constructor.
 	 */
-	public APIMojo() {
+	public APIVersionMojo() {
 		super();
 	}
 
@@ -68,7 +70,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 	public void init() throws MojoExecutionException, MojoFailureException {
 		try {
 			logger.info(____ATTENTION_MARKER____);
-			logger.info("API");
+			logger.info("API Version");
 			logger.info(____ATTENTION_MARKER____);
 
 			String options = "";
@@ -148,7 +150,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 	}
 
 	/**
-	 * Creates an API in the Registry
+	 * Creates an API Version in the Registry
 	 *
 	 * 
 	 * @throws MojoExecutionException
@@ -160,13 +162,18 @@ public class APIMojo extends APIRegistryAbstractMojo {
 				if(config.getMetadata()!=null) {
 					String apiId = config.getMetadata().getName();
 					if(apiId != null && !apiId.equals("")) {
-						if(action.equalsIgnoreCase("Update"))
-							ApigeeRegistryClient.updateAPI(serverProfile, apiId, config, action);
-						else {
-							if(!ApigeeRegistryClient.getAPI(serverProfile, apiId, config)) {
-								ApigeeRegistryClient.createAPI(serverProfile, apiId, config, action);
-							}else {
-								logger.info(format("API: %s already exist", apiId));
+						if(config.getData()!=null) {
+							Data data = config.getData();
+							for (Version version : data.getVersions()) {
+								if(action.equalsIgnoreCase("Update"))
+									ApigeeRegistryClient.updateAPIVersion(serverProfile, apiId, version, action);
+								else {
+									if(!ApigeeRegistryClient.getAPIVersion(serverProfile, apiId, version)) {
+										ApigeeRegistryClient.createAPIVersion(serverProfile, apiId, version, action);
+									}else {
+										logger.info(format("API Version: %s already exist", version.getMetadata().getName()));
+									}
+								}
 							}
 						}
 					}
@@ -184,7 +191,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 	}
 
 	/**
-	 * Deletes API from Registry
+	 * Deletes API Version from Registry
 	 * 
 	 * @throws MojoExecutionException
 	 */
@@ -195,7 +202,12 @@ public class APIMojo extends APIRegistryAbstractMojo {
 				if(config.getMetadata()!=null) {
 					String apiId = config.getMetadata().getName();
 					if(apiId != null && !apiId.equals("")) {
-						ApigeeRegistryClient.deleteAPI(serverProfile, apiId, config);
+						if(config.getData()!=null) {
+							Data data = config.getData();
+							for (Version version : data.getVersions()) {
+								ApigeeRegistryClient.deleteAPIVersion(serverProfile, apiId, version);
+							}
+						}
 					}
 					else {
 						throw new RuntimeException("ID in the config file is missing or empty");

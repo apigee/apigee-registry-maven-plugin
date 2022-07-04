@@ -51,6 +51,20 @@
 							<goal>api</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>apiversion-deploy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>apiversion</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>apiversionspec-deploy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>apiversionspec</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
