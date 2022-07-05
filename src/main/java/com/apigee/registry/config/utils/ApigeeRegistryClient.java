@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.apigee.registry.config.model.APIConfig;
+import com.apigee.registry.config.model.data.APIArtifact;
 import com.apigee.registry.config.model.data.Deployment;
 import com.apigee.registry.config.model.data.Version;
 import com.apigee.registry.config.model.data.version.Spec_;
@@ -40,8 +41,10 @@ import com.google.cloud.apigeeregistry.v1.ApiSpecName;
 import com.google.cloud.apigeeregistry.v1.ApiVersion;
 import com.google.cloud.apigeeregistry.v1.ApiVersionName;
 import com.google.cloud.apigeeregistry.v1.Artifact;
+import com.google.cloud.apigeeregistry.v1.ArtifactName;
 import com.google.cloud.apigeeregistry.v1.RegistryClient;
 import com.google.cloud.apigeeregistry.v1.RegistrySettings;
+import com.google.cloud.apigeeregistry.v1.ReplaceArtifactRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiDeploymentRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiSpecRequest;
@@ -380,6 +383,56 @@ public class ApigeeRegistryClient {
 	}
 	
 	/**
+	 * Helper to update API Artifact
+	 * 
+	 * @param profile
+	 * @param apiId
+	 * @param artifact
+	 * @param action
+	 * @throws Exception
+	 */
+	public static void updateAPIArtifact(BuildProfile profile, String apiId, APIArtifact artifact, String action) throws Exception {
+		/*try {
+			GoogleCredentials credentials = GoogleCredsSingleton.getInstance(profile).getGoogleCredentials();
+			//GoogleCredentials credentials = getCredentials(profile);
+			RegistrySettings registrySettings = RegistrySettings.newBuilder()
+					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+			RegistryClient registryClient = RegistryClient.create(registrySettings);
+			if(artifact!=null) {
+				ReplaceArtifactRequest request = ReplaceArtifactRequest.newBuilder()
+						.setArtifact(Artifact.newBuilder()
+								.setName(format("projects/%s/locations/%s/apis/%s/artifacts/%s", profile.getProjectId(), profile.getLocation(), apiId, artifact.getMetadata().getName()))
+			            		.setDisplayName((artifact.getData()!=null && artifact.getData().getDisplayName()!=null)?artifact.getData().getDisplayName():null)
+						.build())
+						.build();
+				Artifact response = registryClient.replaceArtifact(request);
+				      
+				UpdateApiDeploymentRequest request = UpdateApiDeploymentRequest.newBuilder()
+			              .setApiDeployment(ApiDeployment.newBuilder()
+			            		  .setName(format("projects/%s/locations/%s/apis/%s/deployments/%s", profile.getProjectId(), profile.getLocation(), apiId, deployment.getMetadata().getName()))
+			            		  .setDisplayName((deployment.getData()!=null && deployment.getData().getDisplayName()!=null)?deployment.getData().getDisplayName():null)
+			            		  .setApiSpecRevision(apiSpecRevision)
+			            		  .setEndpointUri((deployment.getData()!=null && deployment.getData().getExternalChannelURI()!=null)?deployment.getData().getExternalChannelURI():null)
+			            		  .setExternalChannelUri((deployment.getData()!=null && deployment.getData().getExternalChannelURI()!=null)?deployment.getData().getExternalChannelURI():null)
+			            		  .setIntendedAudience((deployment.getData()!=null && deployment.getData().getIntendedAudience()!=null)?deployment.getData().getIntendedAudience():null)
+			            		  .setAccessGuidance((deployment.getData()!=null && deployment.getData().getAccessGuidance()!=null)?deployment.getData().getAccessGuidance():null)
+			            		  .putAllAnnotations((artifact.getMetadata()!=null && artifact.getMetadata().getAnnotations()!=null)?artifact.getMetadata().getAnnotations():null)
+			            		  .putAllLabels((artifact.getMetadata()!=null && artifact.getMetadata().getLabels()!=null)?artifact.getMetadata().getLabels():null)
+			              .build())
+			              .setAllowMissing(true)
+			              .build();
+				ApiDeployment apiDeploymentResponse = registryClient.updateApiDeployment(request);
+				logger.info(apiDeploymentResponse.toString());
+			}
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}*/
+	}
+	
+	/**
 	 * Helper to delete an API
 	 * @param profile
 	 * @param apiId
@@ -523,34 +576,6 @@ public class ApigeeRegistryClient {
 	}
 	
 	/**
-	 * Helper to delete an API artifact
-	 * @param profile
-	 * @param apiId
-	 * @param config
-	 * @throws Exception
-	 */
-	public static void deleteAPIArtifact (BuildProfile profile, String apiId, APIConfig config) throws Exception {
-		try {			
-			GoogleCredentials credentials = GoogleCredsSingleton.getInstance(profile).getGoogleCredentials();
-			//GoogleCredentials credentials = getCredentials(profile);
-			RegistrySettings registrySettings = RegistrySettings.newBuilder()
-					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
-			RegistryClient registryClient = RegistryClient.create(registrySettings);
-			ApiName api = ApiName.of(profile.getProjectId(), profile.getLocation(), apiId);
-			
-			//delete artifacts
-			for (Artifact artifact : registryClient.listArtifacts(api).iterateAll()) {
-				logger.info(format("Deleting API artifact: %s",artifact.getName()));
-				registryClient.deleteArtifact(artifact.getName());
-			}
-			
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw e;
-		}
-	}
-	
-	/**
 	 * Helper to delete an API deployment
 	 * @param profile
 	 * @param apiId
@@ -570,7 +595,7 @@ public class ApigeeRegistryClient {
 			registryClient.deleteApiDeployment(name);
 		} catch(NotFoundException e) {
 			if(e.getMessage()!=null && e.getMessage().contains("NOT_FOUND")) {
-				logger.info(format("API Version Spec: %s not found", deployment.getMetadata().getName()));
+				logger.info(format("API Deployment: %s not found", deployment.getMetadata().getName()));
 				return;
 			}else {
 				logger.error(e.getMessage());
@@ -582,6 +607,40 @@ public class ApigeeRegistryClient {
 			throw e;
 		}
 	}
+	
+	/**
+	 * Helper to delete an API artifact
+	 * @param profile
+	 * @param apiId
+	 * @param artifact
+	 * @throws Exception
+	 */
+	public static void deleteAPIArtifact (BuildProfile profile, String apiId, APIArtifact artifact) throws Exception {
+		try {			
+			GoogleCredentials credentials = GoogleCredsSingleton.getInstance(profile).getGoogleCredentials();
+			//GoogleCredentials credentials = getCredentials(profile);
+			RegistrySettings registrySettings = RegistrySettings.newBuilder()
+					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+			RegistryClient registryClient = RegistryClient.create(registrySettings);
+			//delete artifact
+			logger.info(format("Deleting API artifact: %s", artifact.getMetadata().getName()));
+			String name = ArtifactName.ofProjectLocationApiArtifactName(profile.getProjectId(), profile.getLocation(), apiId, artifact.getMetadata().getName()).toString();
+			registryClient.deleteArtifact(name);
+		} catch(NotFoundException e) {
+			if(e.getMessage()!=null && e.getMessage().contains("NOT_FOUND")) {
+				logger.info(format("API Artifact: %s not found", artifact.getMetadata().getName()));
+				return;
+			}else {
+				logger.error(e.getMessage());
+				throw e;
+			}
+		}
+		catch (Exception e) {
+			logger.error(e.getMessage());
+			throw e;
+		}
+	}
+	
 	
 	/**
 	 * Helper to get the revision of API Version Spec

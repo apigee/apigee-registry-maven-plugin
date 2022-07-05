@@ -72,6 +72,13 @@
 							<goal>apideployment</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>apigee-registry-apiartifact</id>
+						<phase>install</phase>
+						<goals>
+							<goal>apiartifact</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

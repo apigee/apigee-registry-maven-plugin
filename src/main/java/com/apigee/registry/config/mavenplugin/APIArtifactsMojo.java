@@ -28,6 +28,7 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import com.apigee.registry.config.model.APIConfig;
 import com.apigee.registry.config.model.Data;
+import com.apigee.registry.config.model.data.APIArtifact;
 import com.apigee.registry.config.model.data.Deployment;
 import com.apigee.registry.config.utils.ApigeeRegistryClient;
 import com.apigee.registry.config.utils.BuildProfile;
@@ -35,15 +36,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
- * Goal to configure API Deployment in Apigee Registry
+ * Goal to configure API Artifacts in Apigee Registry
  *
  * @author ssvaidyanathan
- * @goal apideployment
+ * @goal apiartifact
  * @phase install
  */
 
-public class APIDeployment extends APIRegistryAbstractMojo {
-	static Logger logger = LogManager.getLogger(APIDeployment.class);
+public class APIArtifactsMojo extends APIRegistryAbstractMojo {
+	static Logger logger = LogManager.getLogger(APIArtifactsMojo.class);
 
 	public static final String ____ATTENTION_MARKER____ = "************************************************************************";
 
@@ -58,7 +59,7 @@ public class APIDeployment extends APIRegistryAbstractMojo {
 	/**
 	 * Constructor.
 	 */
-	public APIDeployment() {
+	public APIArtifactsMojo() {
 		super();
 	}
 
@@ -70,7 +71,7 @@ public class APIDeployment extends APIRegistryAbstractMojo {
 	public void init() throws MojoExecutionException, MojoFailureException {
 		try {
 			logger.info(____ATTENTION_MARKER____);
-			logger.info("API Deployment");
+			logger.info("API Artifact");
 			logger.info(____ATTENTION_MARKER____);
 
 			String options = "";
@@ -81,7 +82,7 @@ public class APIDeployment extends APIRegistryAbstractMojo {
 				buildOption = OPTIONS.valueOf(options);
 			}
 			if (buildOption == OPTIONS.none) {
-				logger.info("Skipping API Deployment (default action)");
+				logger.info("Skipping API Artifact (default action)");
 				return;
 			}
 
@@ -150,13 +151,14 @@ public class APIDeployment extends APIRegistryAbstractMojo {
 	}
 
 	/**
-	 * Creates an API Deployment in the Registry
+	 * Creates an API Artifact in the Registry
 	 *
 	 * 
 	 * @throws MojoExecutionException
 	 */
 	public void doUpsert(String action) throws MojoExecutionException {
-		try {
+		logger.info("create or update option on API Artifact is not currently supported");
+		/*try {
 			APIConfig config = parseConfig(serverProfile.getConfigFile());
 			if(config!=null) {
 				if(config.getMetadata()!=null) {
@@ -164,14 +166,14 @@ public class APIDeployment extends APIRegistryAbstractMojo {
 					if(apiId != null && !apiId.equals("")) {
 						if(config.getData()!=null) {
 							Data data = config.getData();
-							for (Deployment deployment : data.getDeployments()) {
+							for (APIArtifact artifact : data.getArtifacts()) {
 								if(action.equalsIgnoreCase("Update"))
-									ApigeeRegistryClient.updateAPIDeployment(serverProfile, apiId, deployment, action);
+									ApigeeRegistryClient.updateAPIArtifact(serverProfile, apiId, artifact, action);
 								else {
-									if(!ApigeeRegistryClient.getAPIDeployment(serverProfile, apiId, deployment)) {
-										ApigeeRegistryClient.createAPIDeployment(serverProfile, apiId, deployment, action);
+									if(!ApigeeRegistryClient.getAPIArtifact(serverProfile, apiId, artifact)) {
+										ApigeeRegistryClient.createAPIArtifact(serverProfile, apiId, artifact, action);
 									}else {
-										logger.info(format("API Version: %s already exist", deployment.getMetadata().getName()));
+										logger.info(format("API Artifact: %s already exist", artifact.getMetadata().getName()));
 									}
 								}
 							}
@@ -187,11 +189,11 @@ public class APIDeployment extends APIRegistryAbstractMojo {
 			}
 		}catch (Exception e) {
 			throw new RuntimeException("Update failure: " + e.getMessage());
-		}
+		}*/
 	}
 
 	/**
-	 * Deletes API Deployment from Registry
+	 * Deletes API Artifact from Registry
 	 * 
 	 * @throws MojoExecutionException
 	 */
@@ -204,8 +206,8 @@ public class APIDeployment extends APIRegistryAbstractMojo {
 					if(apiId != null && !apiId.equals("")) {
 						if(config.getData()!=null) {
 							Data data = config.getData();
-							for (Deployment deployment : data.getDeployments()) {
-								ApigeeRegistryClient.deleteAPIDeployment(serverProfile, apiId, deployment);
+							for (APIArtifact artifact : data.getArtifacts()) {
+								ApigeeRegistryClient.deleteAPIArtifact(serverProfile, apiId, artifact);
 							}
 						}
 					}

@@ -19,7 +19,7 @@ package com.apigee.registry.config.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.apigee.registry.config.model.data.Artifact;
+import com.apigee.registry.config.model.data.APIArtifact;
 import com.apigee.registry.config.model.data.Deployment;
 import com.apigee.registry.config.model.data.Version;
 
@@ -30,7 +30,7 @@ public class Data {
 	private String recommendedDeployment;
 	private List<Version> versions = new ArrayList<Version>();
 	private List<Deployment> deployments = new ArrayList<Deployment>();
-	private List<Artifact> artifacts = new ArrayList<Artifact>();
+	private List<APIArtifact> artifacts = new ArrayList<APIArtifact>();
 
 	public String getDisplayName() {
 		return displayName;
@@ -80,11 +80,11 @@ public class Data {
 		this.deployments = deployments;
 	}
 
-	public List<Artifact> getArtifacts() {
+	public List<APIArtifact> getArtifacts() {
 		return artifacts;
 	}
 
-	public void setArtifacts(List<Artifact> artifacts) {
+	public void setArtifacts(List<APIArtifact> artifacts) {
 		this.artifacts = artifacts;
 	}
 }

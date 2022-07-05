@@ -20,7 +20,7 @@ package com.apigee.registry.config.model.data;
 import com.apigee.registry.config.model.data.artifact.Data____;
 import com.apigee.registry.config.model.data.artifact.Metadata____;
 
-public class Artifact {
+public class APIArtifact {
 	private String kind;
 	private Metadata____ metadata;
 	private Data____ data;
