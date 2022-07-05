@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.apigee.registry.config.model.APIConfig;
+import com.apigee.registry.config.model.data.Deployment;
 import com.apigee.registry.config.model.data.Version;
 import com.apigee.registry.config.model.data.version.Spec_;
 import com.google.api.gax.core.FixedCredentialsProvider;
@@ -32,6 +33,7 @@ import com.google.api.gax.rpc.NotFoundException;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.apigeeregistry.v1.Api;
 import com.google.cloud.apigeeregistry.v1.ApiDeployment;
+import com.google.cloud.apigeeregistry.v1.ApiDeploymentName;
 import com.google.cloud.apigeeregistry.v1.ApiName;
 import com.google.cloud.apigeeregistry.v1.ApiSpec;
 import com.google.cloud.apigeeregistry.v1.ApiSpecName;
@@ -40,6 +42,7 @@ import com.google.cloud.apigeeregistry.v1.ApiVersionName;
 import com.google.cloud.apigeeregistry.v1.Artifact;
 import com.google.cloud.apigeeregistry.v1.RegistryClient;
 import com.google.cloud.apigeeregistry.v1.RegistrySettings;
+import com.google.cloud.apigeeregistry.v1.UpdateApiDeploymentRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiSpecRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiVersionRequest;
@@ -134,6 +137,33 @@ public class ApigeeRegistryClient {
 	}
 	
 	/**
+	 * Helper to check if API Deployment exist
+	 * @param profile
+	 * @param apiId
+	 * @param version
+	 * @return
+	 * @throws Exception
+	 */
+	public static boolean getAPIDeployment(BuildProfile profile, String apiId, Deployment depoloyment) throws Exception {
+		try {
+			GoogleCredentials credentials = GoogleCredsSingleton.getInstance(profile).getGoogleCredentials();
+			//GoogleCredentials credentials = getCredentials(profile);
+			RegistrySettings registrySettings = RegistrySettings.newBuilder()
+					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+			RegistryClient registryClient = RegistryClient.create(registrySettings);
+			String name = ApiDeploymentName.of(profile.getProjectId(), profile.getLocation(), apiId, depoloyment.getMetadata().getName()).toString();
+			ApiDeployment response = registryClient.getApiDeployment(name);
+			if (response!=null && response.getCreateTime()!=null)
+		    	return true;
+		    else 
+		    	return false;
+		}catch (Exception e) {
+			logger.error(format("API Deployment: %s not found", depoloyment.getMetadata().getName()));
+			return false;
+		}
+	}
+	
+	/**
 	 * Helper to create API
 	 * 
 	 * @param profile
@@ -174,6 +204,19 @@ public class ApigeeRegistryClient {
 	}
 	
 	/**
+	 * Helper to create API Deployment
+	 * 
+	 * @param profile
+	 * @param apiId
+	 * @param deployment
+	 * @param action
+	 * @throws Exception
+	 */
+	public static void createAPIDeployment(BuildProfile profile, String apiId, Deployment deployment, String action) throws Exception {
+		updateAPIDeployment(profile, apiId, deployment, action);
+	}
+	
+	/**
 	 * Helper to update API
 	 * 
 	 * @param profile
@@ -204,64 +247,6 @@ public class ApigeeRegistryClient {
 						.setAllowMissing(true).build();
 				Api apiResponse = registryClient.updateApi(apiRequest);
 				logger.info(apiResponse.toString());
-				
-				/*if(apiConfig.getData()!=null) {
-					Data data = apiConfig.getData();
-					//Versions
-					for (Version version : data.getVersions()) {
-						logger.info(format("%s API Version: %s", action, version.getMetadata().getName()));
-						UpdateApiVersionRequest apiVersionRequest = UpdateApiVersionRequest.newBuilder()
-					              .setApiVersion(ApiVersion.newBuilder()
-				            		  .setName(format("projects/%s/locations/%s/apis/%s/versions/%s", profile.getProjectId(), profile.getLocation(), apiId, version.getMetadata().getName()))
-				            		  .setDisplayName((version.getData()!=null && version.getData().getDisplayName()!=null)?version.getData().getDisplayName():null)
-				            		  .setState((version.getData()!=null && version.getData().getState()!=null)?version.getData().getState():null)
-				            		  .putAllAnnotations((version.getMetadata()!=null && version.getMetadata().getAnnotations()!=null)?version.getMetadata().getAnnotations():null)	  
-					              .build())
-					              .setAllowMissing(true)
-					              .build();
-						ApiVersion apiVersionResponse = registryClient.updateApiVersion(apiVersionRequest);
-						logger.info(apiVersionResponse.toString());
-						
-						//Spec
-						for(Spec_ spec : version.getData().getSpecs()) {
-							logger.info(format("%s API Version Spec: %s", action, spec.getMetadata().getName()));
-							UpdateApiSpecRequest apiSpecRequest = UpdateApiSpecRequest.newBuilder()
-							              .setApiSpec(ApiSpec.newBuilder()
-						            		  .setName(format("projects/%s/locations/%s/apis/%s/versions/%s/specs/%s", profile.getProjectId(), profile.getLocation(), apiId, version.getMetadata().getName(), spec.getMetadata().getName()))
-						            		  .setFilename((spec.getData()!=null && spec.getData().getFilename()!=null)?spec.getData().getFilename():null)
-						            		  .setSourceUri((spec.getData()!=null && spec.getData().getSourceURI()!=null)?spec.getData().getSourceURI():null)
-						            		  .setContents((spec.getData()!=null && spec.getData().getSourceURI()!=null)?ByteString.readFrom(new FileInputStream(spec.getData().getSourceURI().replace("file://",""))):null)
-						            		  .setMimeType((spec.getData()!=null && spec.getData().getMimeType()!=null)?spec.getData().getMimeType():null)
-						            		  .putAllAnnotations((spec.getMetadata()!=null && spec.getMetadata().getAnnotations()!=null)?spec.getMetadata().getAnnotations():new HashMap<String, String>())	  
-							              .build())
-							              .setAllowMissing(true)
-							              .build();
-							ApiSpec apiSpecResponse = registryClient.updateApiSpec(apiSpecRequest);
-							logger.info(apiSpecResponse.toString());
-						}
-					}
-					//Deployments
-					for (Deployment deployment : data.getDeployments()) {
-						logger.info(format("%s API Version: %s", action, deployment.getMetadata().getName()));
-						UpdateApiDeploymentRequest apiDeploymentRequest = UpdateApiDeploymentRequest.newBuilder()
-						              .setApiDeployment(ApiDeployment.newBuilder()
-						            		  .setName(format("projects/%s/locations/%s/apis/%s/deployments/%s", profile.getProjectId(), profile.getLocation(), apiId, deployment.getMetadata().getName()))
-						            		  .setDisplayName((deployment.getData()!=null && deployment.getData().getDisplayName()!=null)?deployment.getData().getDisplayName():null)
-						            		  .setApiSpecRevision((deployment.getData()!=null && deployment.getData().getApiSpecRevision()!=null)?deployment.getData().getApiSpecRevision():null)
-						            		  .setEndpointUri((deployment.getData()!=null && deployment.getData().getEndpointURI()!=null)?deployment.getData().getEndpointURI():null)
-						            		  .setExternalChannelUri((deployment.getData()!=null && deployment.getData().getExternalChannelURI()!=null)?deployment.getData().getExternalChannelURI():null)
-						            		  .setIntendedAudience((deployment.getData()!=null && deployment.getData().getIntendedAudience()!=null)?deployment.getData().getIntendedAudience():null)
-						            		  .setAccessGuidance((deployment.getData()!=null && deployment.getData().getAccessGuidance()!=null)?deployment.getData().getAccessGuidance():null)
-						            		  .putAllLabels((deployment.getMetadata()!=null && deployment.getMetadata().getLabels()!=null)?deployment.getMetadata().getLabels():new HashMap<String, String>())	  
-						            		  .putAllAnnotations((deployment.getMetadata()!=null && deployment.getMetadata().getAnnotations()!=null)?deployment.getMetadata().getAnnotations():new HashMap<String, String>())	  
-						              .build())
-						              .setAllowMissing(true)
-						              .build();
-						      ApiDeployment apiDeploymentResponse = registryClient.updateApiDeployment(apiDeploymentRequest);
-						      logger.info(apiDeploymentResponse.toString());
-					}
-				}*/
-				
 			}
 			
 		} catch (Exception e) {
@@ -341,6 +326,50 @@ public class ApigeeRegistryClient {
 				              .build();
 				ApiSpec apiSpecResponse = registryClient.updateApiSpec(apiSpecRequest);
 				logger.info(apiSpecResponse.toString());
+			}
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	
+	/**
+	 * Helper to update API Deployment
+	 * 
+	 * @param profile
+	 * @param apiId
+	 * @param version
+	 * @param action
+	 * @throws Exception
+	 */
+	public static void updateAPIDeployment(BuildProfile profile, String apiId, Deployment deployment, String action) throws Exception {
+		try {
+			GoogleCredentials credentials = GoogleCredsSingleton.getInstance(profile).getGoogleCredentials();
+			//GoogleCredentials credentials = getCredentials(profile);
+			RegistrySettings registrySettings = RegistrySettings.newBuilder()
+					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+			RegistryClient registryClient = RegistryClient.create(registrySettings);
+			if(deployment!=null) {
+				String apiSpecRevision = getAPIRevisionForVersionSpec(profile, apiId, deployment.getData().getApiSpecRevision()); //fetch the revisionId
+				UpdateApiDeploymentRequest request = UpdateApiDeploymentRequest.newBuilder()
+			              .setApiDeployment(ApiDeployment.newBuilder()
+			            		  .setName(format("projects/%s/locations/%s/apis/%s/deployments/%s", profile.getProjectId(), profile.getLocation(), apiId, deployment.getMetadata().getName()))
+			            		  .setDisplayName((deployment.getData()!=null && deployment.getData().getDisplayName()!=null)?deployment.getData().getDisplayName():null)
+			            		  .setApiSpecRevision(apiSpecRevision)
+			            		  .setEndpointUri((deployment.getData()!=null && deployment.getData().getExternalChannelURI()!=null)?deployment.getData().getExternalChannelURI():null)
+			            		  .setExternalChannelUri((deployment.getData()!=null && deployment.getData().getExternalChannelURI()!=null)?deployment.getData().getExternalChannelURI():null)
+			            		  .setIntendedAudience((deployment.getData()!=null && deployment.getData().getIntendedAudience()!=null)?deployment.getData().getIntendedAudience():null)
+			            		  .setAccessGuidance((deployment.getData()!=null && deployment.getData().getAccessGuidance()!=null)?deployment.getData().getAccessGuidance():null)
+			            		  .putAllAnnotations((deployment.getMetadata()!=null && deployment.getMetadata().getAnnotations()!=null)?deployment.getMetadata().getAnnotations():null)
+			            		  .putAllLabels((deployment.getMetadata()!=null && deployment.getMetadata().getLabels()!=null)?deployment.getMetadata().getLabels():null)
+			              .build())
+			              .setAllowMissing(true)
+			              .build();
+				ApiDeployment apiDeploymentResponse = registryClient.updateApiDeployment(request);
+				logger.info(apiDeploymentResponse.toString());
 			}
 			
 		} catch (Exception e) {
@@ -525,28 +554,61 @@ public class ApigeeRegistryClient {
 	 * Helper to delete an API deployment
 	 * @param profile
 	 * @param apiId
-	 * @param config
+	 * @param deployment
 	 * @throws Exception
 	 */
-	public static void deleteAPIDeployment (BuildProfile profile, String apiId, APIConfig config) throws Exception {
+	public static void deleteAPIDeployment (BuildProfile profile, String apiId, Deployment deployment) throws Exception {
 		try {			
 			GoogleCredentials credentials = GoogleCredsSingleton.getInstance(profile).getGoogleCredentials();
 			//GoogleCredentials credentials = getCredentials(profile);
 			RegistrySettings registrySettings = RegistrySettings.newBuilder()
 					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
 			RegistryClient registryClient = RegistryClient.create(registrySettings);
-			ApiName api = ApiName.of(profile.getProjectId(), profile.getLocation(), apiId);
-			
-			//delete deployments
-			for (ApiDeployment deployment : registryClient.listApiDeployments(api.toString()).iterateAll()) {
-				logger.info(format("Deleting API deployment: %s", deployment.getName()));
-		        registryClient.deleteApiDeployment(deployment.getName());
-		    }
-			
-		} catch (Exception e) {
+			//delete deployment
+			logger.info(format("Deleting API deployment: %s", deployment.getMetadata().getName()));
+			String name = ApiDeploymentName.of(profile.getProjectId(), profile.getLocation(), apiId, deployment.getMetadata().getName()).toString();
+			registryClient.deleteApiDeployment(name);
+		} catch(NotFoundException e) {
+			if(e.getMessage()!=null && e.getMessage().contains("NOT_FOUND")) {
+				logger.info(format("API Version Spec: %s not found", deployment.getMetadata().getName()));
+				return;
+			}else {
+				logger.error(e.getMessage());
+				throw e;
+			}
+		}
+		catch (Exception e) {
 			logger.error(e.getMessage());
 			throw e;
 		}
+	}
+	
+	/**
+	 * Helper to get the revision of API Version Spec
+	 * @param profile
+	 * @param apiId
+	 * @param version
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getAPIRevisionForVersionSpec(BuildProfile profile, String apiId, String version) throws Exception {
+		String revision = null;
+		try {
+			GoogleCredentials credentials = GoogleCredsSingleton.getInstance(profile).getGoogleCredentials();
+			//GoogleCredentials credentials = getCredentials(profile);
+			RegistrySettings registrySettings = RegistrySettings.newBuilder()
+					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
+			RegistryClient registryClient = RegistryClient.create(registrySettings);
+			String name = format("projects/%s/locations/%s/apis/%s/versions/%s", profile.getProjectId(), profile.getLocation(), apiId, version.split("@")[0]);
+			ApiSpec response = registryClient.getApiSpec(name);
+			if (response!=null && response.getRevisionId()!=null)
+				revision = format("projects/%s/locations/%s/apis/%s/versions/%s", profile.getProjectId(), profile.getLocation(), apiId, version.replace("latest", response.getRevisionId()));
+		    else 
+		    	revision = null;
+		}catch (Exception e) {
+			logger.error(format("API Version: %s not found", version));
+		}
+		return revision;
 	}
 	
 	

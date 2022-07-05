@@ -120,7 +120,7 @@ data:
          apihub-external-channel-name: SwaggerUI
      data:
        displayName: dev
-       apiSpecRevision: 106/specs/openapi-106yaml@59db0bac
+       apiSpecRevision: 106/specs/openapi-106yaml@latest
        endpointURI: https://acme-dev.apigee.net
        externalChannelURI: http://specs.acme.com/dev
        intendedAudience: Nightly builds, somewhat volatile
@@ -133,7 +133,7 @@ data:
          apihub-external-channel-name: API portal (public)
      data:
        displayName: prod
-       apiSpecRevision: 104/specs/openapi-104yaml@c6bf9583
+       apiSpecRevision: 104/specs/openapi-104yaml@latest
        endpointURI: api.acme.com
        externalChannelURI: https://developers.acme.com/apis/magic-demo
        intendedAudience: The production version of our external customer-facing API
@@ -146,8 +146,43 @@ data:
          apihub-external-channel-name: SwaggerUI
      data:
        displayName: test
-       apiSpecRevision: 105/specs/openapi-105-typoyaml@8dca65fe
+       apiSpecRevision: 105/specs/openapi-105-typoyaml@latest
        endpointURI: acme-test.apigee.net
        externalChannelURI: http://specs.acme.com/test
        intendedAudience: Used for quality assurance testing
        accessGuidance: If you have a need for testing credentials, reach out to the team to request.
+ artifacts:
+   - kind: ReferenceList
+     metadata:
+       name: apihub-related
+     data:
+       displayName: ""
+       description: Defines a list of related resources
+       references:
+         - id: github
+           displayName: GitHub
+           category: apihub-source-code
+           resource: ""
+           uri: https://github.com/apigee/registry
+         - id: performance-dashboard
+           displayName: Performance dashboard
+           category: apihub-other
+           resource: ""
+           uri: https://apigee.google.com/organizations/apigee-migration-cust/analytics/proxy-performance
+   - kind: ReferenceList
+     metadata:
+       name: apihub-dependencies
+     data:
+       displayName: ""
+       description: Defines a list of dependencies
+       references:
+         - id: cloud-sql
+           displayName: Cloud SQL
+           category: apihub-other
+           resource: ""
+           uri: https://cloud.google.com/sql/docs/postgres
+         - id: gcp-iam
+           displayName: GCP IAM
+           category: apihub-other
+           resource: ""
+           uri: https://pantheon.corp.google.com/apigee/api-registry/apis/iam/overview?project=apihub-demo

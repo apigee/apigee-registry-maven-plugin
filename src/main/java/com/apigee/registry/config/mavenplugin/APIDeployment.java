@@ -28,23 +28,22 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import com.apigee.registry.config.model.APIConfig;
 import com.apigee.registry.config.model.Data;
-import com.apigee.registry.config.model.data.Version;
-import com.apigee.registry.config.model.data.version.Spec_;
+import com.apigee.registry.config.model.data.Deployment;
 import com.apigee.registry.config.utils.ApigeeRegistryClient;
 import com.apigee.registry.config.utils.BuildProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
- * Goal to register API Version Spec in Apigee Registry
+ * Goal to configure API Deployment in Apigee Registry
  *
  * @author ssvaidyanathan
- * @goal apiversionspec
+ * @goal apideployment
  * @phase install
  */
 
-public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
-	static Logger logger = LogManager.getLogger(APIVersionSpecMojo.class);
+public class APIDeployment extends APIRegistryAbstractMojo {
+	static Logger logger = LogManager.getLogger(APIDeployment.class);
 
 	public static final String ____ATTENTION_MARKER____ = "************************************************************************";
 
@@ -59,7 +58,7 @@ public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
 	/**
 	 * Constructor.
 	 */
-	public APIVersionSpecMojo() {
+	public APIDeployment() {
 		super();
 	}
 
@@ -71,7 +70,7 @@ public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
 	public void init() throws MojoExecutionException, MojoFailureException {
 		try {
 			logger.info(____ATTENTION_MARKER____);
-			logger.info("API Version Spec");
+			logger.info("API Deployment");
 			logger.info(____ATTENTION_MARKER____);
 
 			String options = "";
@@ -82,7 +81,7 @@ public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
 				buildOption = OPTIONS.valueOf(options);
 			}
 			if (buildOption == OPTIONS.none) {
-				logger.info("Skipping API Version Spec (default action)");
+				logger.info("Skipping API Deployment (default action)");
 				return;
 			}
 
@@ -151,7 +150,7 @@ public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
 	}
 
 	/**
-	 * Creates an API Version Spec in the Registry
+	 * Creates an API Deployment in the Registry
 	 *
 	 * 
 	 * @throws MojoExecutionException
@@ -165,16 +164,14 @@ public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
 					if(apiId != null && !apiId.equals("")) {
 						if(config.getData()!=null) {
 							Data data = config.getData();
-							for (Version version : data.getVersions()) {
-								for(Spec_ spec : version.getData().getSpecs()) {
-									if(action.equalsIgnoreCase("Update"))
-										ApigeeRegistryClient.updateAPIVersionSpec(serverProfile, apiId, version.getMetadata().getName(), spec, action);
-									else {
-										if(!ApigeeRegistryClient.getAPIVersionSpec(serverProfile, apiId, version.getMetadata().getName(), spec)) {
-											ApigeeRegistryClient.createAPIVersionSpec(serverProfile, apiId, version.getMetadata().getName(), spec, action);
-										}else {
-											logger.info(format("API Version Spec: %s already exist", spec.getMetadata().getName()));
-										}
+							for (Deployment deployment : data.getDeployments()) {
+								if(action.equalsIgnoreCase("Update"))
+									ApigeeRegistryClient.updateAPIDeployment(serverProfile, apiId, deployment, action);
+								else {
+									if(!ApigeeRegistryClient.getAPIDeployment(serverProfile, apiId, deployment)) {
+										ApigeeRegistryClient.createAPIDeployment(serverProfile, apiId, deployment, action);
+									}else {
+										logger.info(format("API Version: %s already exist", deployment.getMetadata().getName()));
 									}
 								}
 							}
@@ -194,7 +191,7 @@ public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
 	}
 
 	/**
-	 * Deletes API Version Spec from Registry
+	 * Deletes API Deployment from Registry
 	 * 
 	 * @throws MojoExecutionException
 	 */
@@ -207,10 +204,8 @@ public class APIVersionSpecMojo extends APIRegistryAbstractMojo {
 					if(apiId != null && !apiId.equals("")) {
 						if(config.getData()!=null) {
 							Data data = config.getData();
-							for (Version version : data.getVersions()) {
-								for(Spec_ spec : version.getData().getSpecs()) {
-									ApigeeRegistryClient.deleteAPIVersionSpec(serverProfile, apiId, version.getMetadata().getName(), spec);
-								}
+							for (Deployment deployment : data.getDeployments()) {
+								ApigeeRegistryClient.deleteAPIDeployment(serverProfile, apiId, deployment);
 							}
 						}
 					}

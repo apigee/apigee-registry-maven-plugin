@@ -79,7 +79,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 				buildOption = OPTIONS.valueOf(options);
 			}
 			if (buildOption == OPTIONS.none) {
-				logger.info("Skipping Register API (default action)");
+				logger.info("Skipping API (default action)");
 				return;
 			}
 
