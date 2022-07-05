@@ -17,3 +17,5 @@ The [samples folder](./samples) provides a README with Getting Started steps and
 * Post a question in [Apigee community](https://community.apigee.com/index.html)
 * Create an [issue](https://github.com/apigee/apigee-registry-maven-plugin/issues/new)
 
+## Note
+* `apiartifact` goal does not support `create` and `update` options
