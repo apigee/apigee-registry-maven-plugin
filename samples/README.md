@@ -41,8 +41,6 @@ mvn install -P{profile} -DprojectId=${project} -Dfile={path}
 
 **Please ensure all prerequisites have been followed prior to continuing.**
 
-Goal: Import OpenAPI specs and create API Docs in the developer portal instance.
-
 ```
 /samples
 ```
