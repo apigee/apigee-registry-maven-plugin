@@ -53,7 +53,7 @@ To use, edit samples/pom.xml and update values as specified.
 <apigee.registry.projectId>${projectId}</apigee.registry.projectId> <!-- GCP Project ID where Apigee Registry is provisioned -->
 <apigee.registry.location>global</apigee.registry.location> <!-- Apigee Registry location. Default is global -->
 <apigee.registry.config.file>./api-config.yaml</apigee.registry.config.file> <!-- Path to the API configuration yaml-->
-<apigee.registry.config.options>update</apigee.registry.config.options> <!-- Options like none, create, update, delete, sync. Default is none-->
+<apigee.registry.config.options>${options}</apigee.registry.config.options> <!-- Options like none, create, update, delete, sync. Default is none-->
 <apigee.registry.serviceaccount.file>${file}</apigee.registry.serviceaccount.file> <!-- Service Account File. Use this or "apigee.registry.bearer". Service Account takes precedence -->
 <apigee.registry.bearer>${bearer}</apigee.registry.bearer> <!-- Bearer Token. Use this or  "apigee.registry.serviceaccount.file" -->
 ```
@@ -61,7 +61,7 @@ To use, edit samples/pom.xml and update values as specified.
 To run, jump to the sample project `cd /samples` and run 
 
 ```bash
-mvn install -P{profile} -DprojectId={projectId} -Doptions=update -Dfile={path}
+mvn install -P{profile} -DprojectId={projectId} -Doptions={option} -Dfile={path}
 ```
 where
 -  `profile` is the Maven profile in the pom.xml
