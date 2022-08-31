@@ -42,7 +42,7 @@
 			<plugin>
 				<groupId>com.apigee.registry.config</groupId>
 				<artifactId>apigee-registry-maven-plugin</artifactId>
-				<version>1.0.0</version>
+				<version>1.0.1</version>
 				<executions>
 					<execution>
 						<id>apigee-registry-api</id>

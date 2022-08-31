@@ -40,17 +40,20 @@ import com.google.cloud.apigeeregistry.v1.ApiSpec;
 import com.google.cloud.apigeeregistry.v1.ApiSpecName;
 import com.google.cloud.apigeeregistry.v1.ApiVersion;
 import com.google.cloud.apigeeregistry.v1.ApiVersionName;
-import com.google.cloud.apigeeregistry.v1.Artifact;
 import com.google.cloud.apigeeregistry.v1.ArtifactName;
+import com.google.cloud.apigeeregistry.v1.DeleteApiDeploymentRequest;
+import com.google.cloud.apigeeregistry.v1.DeleteApiRequest;
+import com.google.cloud.apigeeregistry.v1.DeleteApiSpecRequest;
+import com.google.cloud.apigeeregistry.v1.DeleteApiVersionRequest;
 import com.google.cloud.apigeeregistry.v1.RegistryClient;
 import com.google.cloud.apigeeregistry.v1.RegistrySettings;
-import com.google.cloud.apigeeregistry.v1.ReplaceArtifactRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiDeploymentRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiSpecRequest;
 import com.google.cloud.apigeeregistry.v1.UpdateApiVersionRequest;
 import com.google.protobuf.ByteString;
 
+//SAMPLE - https://github.com/googleapis/google-cloud-java/tree/monorepo_script_output/java-apigee-registry/samples/snippets/generated/com/google/cloud/apigeeregistry/v1/registryclient
 
 public class ApigeeRegistryClient {
 	static Logger logger = LogManager.getLogger(ApigeeRegistryClient.class);
@@ -445,40 +448,14 @@ public class ApigeeRegistryClient {
 			//GoogleCredentials credentials = getCredentials(profile);
 			RegistrySettings registrySettings = RegistrySettings.newBuilder()
 					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
-			RegistryClient registryClient = RegistryClient.create(registrySettings);
-			ApiName api = ApiName.of(profile.getProjectId(), profile.getLocation(), apiId);
-			
-			//delete artifacts
-			for (Artifact artifact : registryClient.listArtifacts(api).iterateAll()) {
-				logger.info(format("Deleting API artifact: %s",artifact.getName()));
-				registryClient.deleteArtifact(artifact.getName());
-			}
-			
-			//delete deployments
-			for (ApiDeployment deployment : registryClient.listApiDeployments(api.toString()).iterateAll()) {
-				logger.info(format("Deleting API deployment: %s", deployment.getName()));
-		        registryClient.deleteApiDeployment(deployment.getName());
-		    }
-
-			//delete versions
-			for (ApiVersion version : registryClient.listApiVersions(api.toString()).iterateAll()) {
-				for (ApiSpec spec : registryClient.listApiSpecs(version.getName()).iterateAll()) {
-					for (Artifact specArtifact : registryClient.listArtifacts(spec.getName()).iterateAll()) {
-						logger.info(format("Deleting API spec artifact: %s",specArtifact.getName()));
-						registryClient.deleteArtifact(specArtifact.getName());
-					}
-					logger.info(format("Deleting API version spec: %s",spec.getName()));
-					registryClient.deleteApiSpec(spec.getName());
-				}
-				logger.info(format("Deleting API version: %s",version.getName()));
-		        registryClient.deleteApiVersion(version.getName());
-		    }
-			
+			RegistryClient registryClient = RegistryClient.create(registrySettings);			
 			//delete API
 			logger.info(format("Deleting API: %s", apiId));
-			//TODO: Remove the above logic and replace with delete API including --force flag
-			registryClient.deleteApi(api);
-			
+			DeleteApiRequest request = DeleteApiRequest.newBuilder()
+			              .setName(ApiName.of(profile.getProjectId(), profile.getLocation(), apiId).toString())
+			              .setForce(true)
+			              .build();
+			registryClient.deleteApi(request);
 		} catch(NotFoundException e) {
 			if(e.getMessage()!=null && e.getMessage().contains("NOT_FOUND")) {
 				logger.info(format("API: %s not found", apiId));
@@ -508,19 +485,13 @@ public class ApigeeRegistryClient {
 			RegistrySettings registrySettings = RegistrySettings.newBuilder()
 					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
 			RegistryClient registryClient = RegistryClient.create(registrySettings);
-			//delete versions
-			String name = ApiVersionName.of(profile.getProjectId(), profile.getLocation(), apiId, version.getMetadata().getName()).toString();
-			for (ApiSpec spec : registryClient.listApiSpecs(name).iterateAll()) {
-				for (Artifact specArtifact : registryClient.listArtifacts(spec.getName()).iterateAll()) {
-					logger.info(format("Deleting API spec artifact: %s",specArtifact.getName()));
-					registryClient.deleteArtifact(specArtifact.getName());
-				}
-				logger.info(format("Deleting API version spec: %s",spec.getName()));
-				registryClient.deleteApiSpec(spec.getName());
-			}
+			//delete API versions
 			logger.info(format("Deleting API version: %s",version.getMetadata().getName()));
-	        registryClient.deleteApiVersion(name);
-			
+			DeleteApiVersionRequest request = DeleteApiVersionRequest.newBuilder()
+			              .setName(ApiVersionName.of(profile.getProjectId(), profile.getLocation(), apiId, version.getMetadata().getName()).toString())
+			              .setForce(true)
+			              .build();
+			registryClient.deleteApiVersion(request);
 		} catch(NotFoundException e) {
 			if(e.getMessage()!=null && e.getMessage().contains("NOT_FOUND")) {
 				logger.info(format("API Version: %s not found", version.getMetadata().getName()));
@@ -552,14 +523,12 @@ public class ApigeeRegistryClient {
 					.setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();
 			RegistryClient registryClient = RegistryClient.create(registrySettings);
 			//delete versions spec
-			String name = ApiSpecName.of(profile.getProjectId(), profile.getLocation(), apiId, version, spec.getMetadata().getName()).toString();
-			for (Artifact specArtifact : registryClient.listArtifacts(name).iterateAll()) {
-				logger.info(format("Deleting API spec artifact: %s",specArtifact.getName()));
-				registryClient.deleteArtifact(specArtifact.getName());
-			}
 			logger.info(format("Deleting API version spec: %s",spec.getMetadata().getName()));
-			registryClient.deleteApiSpec(name);
-			
+			DeleteApiSpecRequest request = DeleteApiSpecRequest.newBuilder()
+		              .setName(ApiSpecName.of(profile.getProjectId(), profile.getLocation(), apiId, version, spec.getMetadata().getName()).toString())
+		              .setForce(true)
+		              .build();
+			registryClient.deleteApiSpec(request);
 		} catch(NotFoundException e) {
 			if(e.getMessage()!=null && e.getMessage().contains("NOT_FOUND")) {
 				logger.info(format("API Version Spec: %s not found", spec.getMetadata().getName()));
@@ -591,8 +560,11 @@ public class ApigeeRegistryClient {
 			RegistryClient registryClient = RegistryClient.create(registrySettings);
 			//delete deployment
 			logger.info(format("Deleting API deployment: %s", deployment.getMetadata().getName()));
-			String name = ApiDeploymentName.of(profile.getProjectId(), profile.getLocation(), apiId, deployment.getMetadata().getName()).toString();
-			registryClient.deleteApiDeployment(name);
+			DeleteApiDeploymentRequest request = DeleteApiDeploymentRequest.newBuilder()
+		          .setName(ApiDeploymentName.of(profile.getProjectId(), profile.getLocation(), apiId, deployment.getMetadata().getName()).toString())
+		          .setForce(true)
+		          .build();
+			registryClient.deleteApiDeployment(request);
 		} catch(NotFoundException e) {
 			if(e.getMessage()!=null && e.getMessage().contains("NOT_FOUND")) {
 				logger.info(format("API Deployment: %s not found", deployment.getMetadata().getName()));
