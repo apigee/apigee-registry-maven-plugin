@@ -159,6 +159,9 @@ public class APIMojo extends APIRegistryAbstractMojo {
 			if(config!=null) {
 				if(config.getMetadata()!=null) {
 					String apiId = config.getMetadata().getName();
+					if(config.getData()!=null && config.getData().getDisplayName()==null) {
+						throw new RuntimeException("DisplayName in the config file is missing or empty");
+					}
 					if(apiId != null && !apiId.equals("")) {
 						if(action.equalsIgnoreCase("Update"))
 							ApigeeRegistryClient.updateAPI(serverProfile, apiId, config, action);
@@ -171,7 +174,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 						}
 					}
 					else {
-						throw new RuntimeException("ID in the config file is missing or empty");
+						throw new RuntimeException("API name in the config file is missing or empty");
 					}
 				}
 			} 
@@ -198,7 +201,7 @@ public class APIMojo extends APIRegistryAbstractMojo {
 						ApigeeRegistryClient.deleteAPI(serverProfile, apiId, config);
 					}
 					else {
-						throw new RuntimeException("ID in the config file is missing or empty");
+						throw new RuntimeException("API name in the config file is missing or empty");
 					}
 				}
 			}

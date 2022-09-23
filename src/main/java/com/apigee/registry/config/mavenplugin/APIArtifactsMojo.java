@@ -180,7 +180,7 @@ public class APIArtifactsMojo extends APIRegistryAbstractMojo {
 						}
 					}
 					else {
-						throw new RuntimeException("ID in the config file is missing or empty");
+						throw new RuntimeException("API name in the config file is missing or empty");
 					}
 				}
 			} 
@@ -212,7 +212,7 @@ public class APIArtifactsMojo extends APIRegistryAbstractMojo {
 						}
 					}
 					else {
-						throw new RuntimeException("ID in the config file is missing or empty");
+						throw new RuntimeException("API name in the config file is missing or empty");
 					}
 				}
 			}
