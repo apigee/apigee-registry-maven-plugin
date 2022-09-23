@@ -64,7 +64,7 @@ public class ApigeeRegistryClient {
 	 * @param profile
 	 * @param apiId
 	 * @param apiConfig
-	 * @return
+	 * @return boolean
 	 * @throws Exception
 	 */
 	public static boolean getAPI(BuildProfile profile, String apiId, APIConfig apiConfig) throws Exception {
@@ -91,7 +91,7 @@ public class ApigeeRegistryClient {
 	 * @param profile
 	 * @param apiId
 	 * @param version
-	 * @return
+	 * @return boolean
 	 * @throws Exception
 	 */
 	public static boolean getAPIVersion(BuildProfile profile, String apiId, Version version) throws Exception {
@@ -120,7 +120,7 @@ public class ApigeeRegistryClient {
 	 * @param apiId
 	 * @param version
 	 * @param spec
-	 * @return
+	 * @return boolean
 	 * @throws Exception
 	 */
 	public static boolean getAPIVersionSpec(BuildProfile profile, String apiId, String version, Spec_ spec) throws Exception {
@@ -146,8 +146,8 @@ public class ApigeeRegistryClient {
 	 * Helper to check if API Deployment exist
 	 * @param profile
 	 * @param apiId
-	 * @param version
-	 * @return
+	 * @param depoloyment
+	 * @return boolean
 	 * @throws Exception
 	 */
 	public static boolean getAPIDeployment(BuildProfile profile, String apiId, Deployment depoloyment) throws Exception {
@@ -347,7 +347,7 @@ public class ApigeeRegistryClient {
 	 * 
 	 * @param profile
 	 * @param apiId
-	 * @param version
+	 * @param deployment
 	 * @param action
 	 * @throws Exception
 	 */
@@ -619,7 +619,7 @@ public class ApigeeRegistryClient {
 	 * @param profile
 	 * @param apiId
 	 * @param version
-	 * @return
+	 * @return String
 	 * @throws Exception
 	 */
 	public static String getAPIRevisionForVersionSpec(BuildProfile profile, String apiId, String version) throws Exception {
