@@ -246,6 +246,7 @@ public class ApigeeRegistryClient {
 									.setName(format("projects/%s/locations/%s/apis/%s", profile.getProjectId(), profile.getLocation(), apiId))
 									.setDisplayName(apiConfig.getData().getDisplayName()) //mandatory and checked in APIMojo itself
 									.setDescription((apiConfig.getData()!=null && apiConfig.getData().getDescription()!=null)?apiConfig.getData().getDescription():"")
+									.setRecommendedDeployment((apiConfig.getData()!=null && apiConfig.getData().getRecommendedDeployment()!=null)?format("projects/%s/locations/%s/apis/%s/deployments/%s", profile.getProjectId(), profile.getLocation(), apiId, apiConfig.getData().getRecommendedDeployment()):"")
 									.setAvailability((apiConfig.getData()!=null && apiConfig.getData().getAvailability()!=null)?apiConfig.getData().getAvailability():"")
 									.putAllLabels((apiConfig.getMetadata()!=null && apiConfig.getMetadata().getLabels()!=null)?apiConfig.getMetadata().getLabels():new HashMap<String, String>())
 									.putAllAnnotations((apiConfig.getMetadata()!=null && apiConfig.getMetadata().getAnnotations()!=null)?apiConfig.getMetadata().getAnnotations():new HashMap<String, String>())
