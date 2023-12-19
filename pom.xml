@@ -25,7 +25,7 @@
 
     <groupId>com.apigee.registry.config</groupId>
     <artifactId>apigee-registry-maven-plugin</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
     <packaging>maven-plugin</packaging>
     <name>apigee-registry-maven-plugin</name>
     <description>Plugin to manage operations in the Apigee API Registry</description>
