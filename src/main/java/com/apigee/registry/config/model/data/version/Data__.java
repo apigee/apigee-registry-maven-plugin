@@ -16,9 +16,15 @@
 
 package com.apigee.registry.config.model.data.version;
 
+import java.util.List;
+
+import com.apigee.registry.config.model.data.APIArtifact;
+
 public class Data__ {
 	private String sourceURI;
 	private String filename;
+	private String description;
+	private List<APIArtifact> artifacts;
 	private String mimeType;
 
 	public String getFilename() {
@@ -43,5 +49,20 @@ public class Data__ {
 
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
+	}
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	public List<APIArtifact> getArtifacts() {
+		return artifacts;
+	}
+
+	public void setArtifacts(List<APIArtifact> artifacts) {
+		this.artifacts = artifacts;
 	}
 }

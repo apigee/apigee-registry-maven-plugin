@@ -23,6 +23,8 @@ public class Data____ {
 	private String displayName;
 	private String description;
 	private List<Reference____> references = new ArrayList<Reference____>();
+	private String action;
+	private String resultUri;
 
 	public String getDisplayName() {
 		return displayName;
@@ -38,6 +40,22 @@ public class Data____ {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public String getResultUri() {
+		return resultUri;
+	}
+
+	public void setResultUri(String resultUri) {
+		this.resultUri = resultUri;
+	}
+	
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
 	}
 
 	public List<Reference____> getReferences() {
