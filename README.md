@@ -1,3 +1,11 @@
+# This repo is DEPRECATED and no longer in use. 
+
+For the latest Apigee Hub plugin, visit [Apigee Hub Maven plugin](https://github.com/apigee/apigee-apihub-maven-plugin)
+
+
+
+
+
 # apigee-registry-maven-plugin
 
 ----------------
